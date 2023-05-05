@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = "com.github.GIGAMOLE"
+version = "1.0.2"
+
 publishing {
     publications {
         release(MavenPublication) {
