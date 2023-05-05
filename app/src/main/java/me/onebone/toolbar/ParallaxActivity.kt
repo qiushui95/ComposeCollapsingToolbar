@@ -48,6 +48,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -79,7 +82,7 @@ fun ParallaxEffect() {
 			modifier = Modifier.fillMaxSize(),
 			state = state,
 			scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
-			toolbarModifier = Modifier.background(MaterialTheme.colors.primary),
+			toolbarModifier = Modifier.background(MaterialTheme.colors.primary).clipToBounds(),
 			enabled = enabled,
 			toolbar = {
 				// Collapsing toolbar collapses its size as small as the that of

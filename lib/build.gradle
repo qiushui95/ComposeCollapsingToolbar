@@ -1,7 +1,11 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'maven-publish'
 }
+
+group = 'com.github.GIGAMOLE'
+version = '1.0.1'
 
 android {
     namespace 'me.onebone.toolbar'
@@ -57,5 +61,3 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4"
 }
-
-apply from: rootProject.file('gradle/publish.gradle')
