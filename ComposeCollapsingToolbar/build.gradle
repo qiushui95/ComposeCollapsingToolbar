@@ -19,7 +19,7 @@ publishing {
 }
 
 android {
-    namespace 'me.onebone.toolbar'
+    namespace 'com.github.GIGAMOLE'
 
     compileSdkVersion 33
     buildToolsVersion "30.0.3"

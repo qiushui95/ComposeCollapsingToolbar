@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "me.onebone.toolbar"
+        applicationId "me.onebone.toolbar.sample"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1
