@@ -1,3 +1,2 @@
-include ':lib'
+include ':ComposeCollapsingToolbar'
 include ':app'
-rootProject.name = "Collapsing Toolbar"
