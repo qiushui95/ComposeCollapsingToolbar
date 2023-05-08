@@ -59,12 +59,25 @@ Note that the `CollapsingToolbarScaffoldState` is stable, which means that a cha
 val state = rememberCollapsingToolbarScaffoldState()
 val offsetY = state.offsetY // y offset of the layout
 val progress = state.toolbarState.progress // how much the toolbar is expanded (0: collapsed, 1: expanded)
+val offsetProgress = state.offsetProgress // how much the toolbar offset (EnterAlways, EnterAlwaysCollapsed) is expanded (0: collapsed, 1: expanded)
+val totalProgress = state.totalProgress // how much the toolbar height and offset is expanded (0: collapsed, 1: expanded)
 
 Text(
     text = "Hello World",
     textSize = (18 + (30 - 18) * progress).sp // text size depending on the progress
     // recomposed when the value of the progress is changed
 )
+```
+
+Also, it is possible to trigger collapse/expansion animations manually:
+```kotlin
+val state = rememberCollapsingToolbarScaffoldState()
+state.toolbarState.expand() // expand toolbar
+state.toolbarState.collapse() // collapse toolbar
+state.offsetExpand() // expand toolbar offset (EnterAlways, EnterAlwaysCollapsed)
+state.offsetCollapse() // collapse toolbar offset (EnterAlways, EnterAlwaysCollapsed)
+state.expand() // expand altogether toolbar and offset
+state.collapse() // collapse altogether toolbar and offset
 ```
 
 ## parallax, pin, road
@@ -77,6 +90,8 @@ CollapsingToolbar(/* ... */) {
     )
 }
 ```
+
+To properly set the `minHeight`/`maxHeight` for `CollapsingToolbar` use `Modifier.pin()` on the child, because `CollapsingToolbar` determines its `minHeight`/`maxHeight` by the smallest/largest child.
 
 ### road modifier
 The `road()` modifier allows you to place a child relatively to the toolbar. It receives two arguments: `whenCollapsed` and `whenExpanded`. As the name suggests, these describe how to place a child when the toolbar is collapsed or expanded, respectively.

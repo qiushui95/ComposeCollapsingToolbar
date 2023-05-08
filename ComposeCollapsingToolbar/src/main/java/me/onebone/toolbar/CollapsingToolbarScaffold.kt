@@ -58,18 +58,21 @@ class CollapsingToolbarScaffoldState(
 
 	internal val offsetYState = mutableStateOf(initialOffsetY)
 
-	internal lateinit var scrollStrategy: ScrollStrategy
+	internal var scrollStrategy: ScrollStrategy? = null
 
 	val offsetProgress: Float
 		@FloatRange(from = 0.0, to = 1.0)
-		get() = when (scrollStrategy) {
-			ScrollStrategy.EnterAlways,
-			ScrollStrategy.EnterAlwaysCollapsed -> {
-				1f - (-offsetY.toFloat() / toolbarState.minHeight.toFloat()).coerceIn(0f, 1f)
-			}
+		get() = scrollStrategy?.let { validScrollStrategy ->
+			when (validScrollStrategy) {
+				ScrollStrategy.EnterAlways,
+				ScrollStrategy.EnterAlwaysCollapsed -> {
+					1f - (-offsetY.toFloat() / toolbarState.minHeight.toFloat()).coerceIn(0f, 1f)
+				}
 
-			ScrollStrategy.ExitUntilCollapsed -> 1f
-		}
+				ScrollStrategy.ExitUntilCollapsed -> 1f
+			}
+		} ?: 0f
+
 	val totalProgress: Float
 		@FloatRange(from = 0.0, to = 1.0)
 		get() {
@@ -80,38 +83,47 @@ class CollapsingToolbarScaffoldState(
 
 	@ExperimentalToolbarApi
 	suspend fun offsetExpand(duration: Int = SPRING_BASED_DURATION) {
-		val anim = AnimationState(offsetY.toFloat())
+		scrollStrategy?.let { validScrollStrategy ->
+			val anim = AnimationState(offsetY.toFloat())
 
-		anim.animateTo(
-			when (scrollStrategy) {
-				ScrollStrategy.EnterAlways,
-				ScrollStrategy.EnterAlwaysCollapsed -> 0f
+			anim.animateTo(
+				when (validScrollStrategy) {
+					ScrollStrategy.EnterAlways,
+					ScrollStrategy.EnterAlwaysCollapsed -> 0f
 
-				ScrollStrategy.ExitUntilCollapsed -> return
-			},
-			if (duration == SPRING_BASED_DURATION) {
-				spring()
-			} else {
-				tween(duration)
+					ScrollStrategy.ExitUntilCollapsed -> return
+				},
+				if (duration == SPRING_BASED_DURATION) {
+					spring()
+				} else {
+					tween(duration)
+				}
+			) {
+				offsetYState.value = value.toInt()
 			}
-		) {
-			offsetYState.value = value.toInt()
 		}
 	}
 
 	@ExperimentalToolbarApi
 	suspend fun offsetCollapse(duration: Int = SPRING_BASED_DURATION) {
-		val anim = AnimationState(offsetY.toFloat())
+		scrollStrategy?.let { validScrollStrategy ->
+			val anim = AnimationState(offsetY.toFloat())
 
-		anim.animateTo(
-			-toolbarState.minHeight.toFloat(),
-			if (duration == SPRING_BASED_DURATION) {
-				spring()
-			} else {
-				tween(duration)
+			anim.animateTo(
+				when (validScrollStrategy) {
+					ScrollStrategy.EnterAlways,
+					ScrollStrategy.EnterAlwaysCollapsed -> -toolbarState.minHeight.toFloat()
+
+					ScrollStrategy.ExitUntilCollapsed -> return
+				},
+				if (duration == SPRING_BASED_DURATION) {
+					spring()
+				} else {
+					tween(duration)
+				}
+			) {
+				offsetYState.value = value.toInt()
 			}
-		) {
-			offsetYState.value = value.toInt()
 		}
 	}
 
@@ -138,16 +150,24 @@ class CollapsingToolbarScaffoldState(
 
 private class CollapsingToolbarScaffoldStateSaver :
 	Saver<CollapsingToolbarScaffoldState, List<Any>> {
+
 	override fun restore(value: List<Any>): CollapsingToolbarScaffoldState =
 		CollapsingToolbarScaffoldState(
 			CollapsingToolbarState(value[0] as Int),
 			value[1] as Int
-		)
+		).also {
+			val restoredScrollStrategy = value[2] as String
+
+			if (restoredScrollStrategy.isNotEmpty()) {
+				it.scrollStrategy = ScrollStrategy.valueOf(restoredScrollStrategy)
+			}
+		}
 
 	override fun SaverScope.save(value: CollapsingToolbarScaffoldState): List<Any> =
 		listOf(
 			value.toolbarState.height,
-			value.offsetY
+			value.offsetY,
+			value.scrollStrategy?.name.orEmpty()
 		)
 }
 
