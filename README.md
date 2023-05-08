@@ -66,7 +66,7 @@ Text(
 ```
 
 ## parallax, pin, road
-You can tell children of CollapsingToolbar how to deal with a collapse/expansion. This works almost the same way to the `collapseMode` in the `CollapsingToolbarLayout` except for the `road` modifier.
+You can tell children of `CollapsingToolbar` how to deal with a collapse/expansion. This works almost the same way to the `collapseMode` in the `CollapsingToolbarLayout` except for the `road` modifier.
 
 ```kotlin
 CollapsingToolbar(/* ... */) {
@@ -99,7 +99,7 @@ The above code orders the title `Text` to be placed at the _CenterStart_ positio
 
 
 ## Scroll Strategy
-`ScrollStrategy` defines how CollapsingToolbar consumes scroll. You can set your desired behavior by providing `scrollStrategy` to `CollapsingToolbarScaffold`:
+`ScrollStrategy` defines how `CollapsingToolbar` consumes scroll. You can set your desired behavior by providing `scrollStrategy` to `CollapsingToolbarScaffold`:
 
 ```kotlin
 CollapsingToolbarScaffold(
@@ -119,3 +119,25 @@ CollapsingToolbarScaffold(
 
 ### ScrollStrategy.ExitUntilCollapsed
 ![ExitUntilCollapsed](img/exit-until-collapsed.gif)
+
+## Snap Config
+`SnapConfig` defines how `CollapsingToolbar` snaps to its edges. You can enable snapping by providing `snapConfig` to `CollapsingToolbarScaffold`:
+
+```kotlin
+CollapsingToolbarScaffold(
+    /* ... */
+    snapConfig = SnapConfig() // "collapseThreshold = 0.5" by default
+) {
+    /* ... */
+}
+```
+
+### Snap for ScrollStrategy.EnterAlways
+![Snap for EnterAlways](img/snap-enter-always.gif)
+
+### Snap for ScrollStrategy.EnterAlwaysCollapsed
+![Snap for EnterAlwaysCollapsed](img/snap-enter-always-collapsed.gif)
+
+### Snap ScrollStrategy.ExitUntilCollapsed
+![Snap for ExitUntilCollapsed](img/snap-exit-until-collapsed.gif)
+

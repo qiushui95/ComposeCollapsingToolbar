@@ -22,6 +22,11 @@
 
 package me.onebone.toolbar
 
+import androidx.annotation.FloatRange
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.animateTo
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -39,6 +44,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import kotlin.math.max
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 @Stable
 class CollapsingToolbarScaffoldState(
@@ -49,9 +57,87 @@ class CollapsingToolbarScaffoldState(
 		get() = offsetYState.value
 
 	internal val offsetYState = mutableStateOf(initialOffsetY)
+
+	internal lateinit var scrollStrategy: ScrollStrategy
+
+	val offsetProgress: Float
+		@FloatRange(from = 0.0, to = 1.0)
+		get() = when (scrollStrategy) {
+			ScrollStrategy.EnterAlways,
+			ScrollStrategy.EnterAlwaysCollapsed -> {
+				1f - (-offsetY.toFloat() / toolbarState.minHeight.toFloat()).coerceIn(0f, 1f)
+			}
+
+			ScrollStrategy.ExitUntilCollapsed -> 1f
+		}
+	val totalProgress: Float
+		@FloatRange(from = 0.0, to = 1.0)
+		get() {
+			val toolbarMaxHeight = toolbarState.maxHeight.toFloat()
+
+			return ((offsetY + toolbarState.height) / toolbarMaxHeight).coerceIn(0f, 1f)
+		}
+
+	@ExperimentalToolbarApi
+	suspend fun offsetExpand(duration: Int = SPRING_BASED_DURATION) {
+		val anim = AnimationState(offsetY.toFloat())
+
+		anim.animateTo(
+			when (scrollStrategy) {
+				ScrollStrategy.EnterAlways,
+				ScrollStrategy.EnterAlwaysCollapsed -> 0f
+
+				ScrollStrategy.ExitUntilCollapsed -> return
+			},
+			if (duration == SPRING_BASED_DURATION) {
+				spring()
+			} else {
+				tween(duration)
+			}
+		) {
+			offsetYState.value = value.toInt()
+		}
+	}
+
+	@ExperimentalToolbarApi
+	suspend fun offsetCollapse(duration: Int = SPRING_BASED_DURATION) {
+		val anim = AnimationState(offsetY.toFloat())
+
+		anim.animateTo(
+			-toolbarState.minHeight.toFloat(),
+			if (duration == SPRING_BASED_DURATION) {
+				spring()
+			} else {
+				tween(duration)
+			}
+		) {
+			offsetYState.value = value.toInt()
+		}
+	}
+
+	@ExperimentalToolbarApi
+	suspend fun expand(duration: Int = SPRING_BASED_DURATION) {
+		coroutineScope {
+			awaitAll(
+				async { offsetExpand(duration) },
+				async { toolbarState.expand(duration) }
+			)
+		}
+	}
+
+	@ExperimentalToolbarApi
+	suspend fun collapse(duration: Int = SPRING_BASED_DURATION) {
+		coroutineScope {
+			awaitAll(
+				async { offsetCollapse(duration) },
+				async { toolbarState.collapse(duration) }
+			)
+		}
+	}
 }
 
-private class CollapsingToolbarScaffoldStateSaver: Saver<CollapsingToolbarScaffoldState, List<Any>> {
+private class CollapsingToolbarScaffoldStateSaver :
+	Saver<CollapsingToolbarScaffoldState, List<Any>> {
 	override fun restore(value: List<Any>): CollapsingToolbarScaffoldState =
 		CollapsingToolbarScaffoldState(
 			CollapsingToolbarState(value[0] as Int),
@@ -62,7 +148,7 @@ private class CollapsingToolbarScaffoldStateSaver: Saver<CollapsingToolbarScaffo
 		listOf(
 			value.toolbarState.height,
 			value.offsetY
-	)
+		)
 }
 
 @Composable
@@ -84,6 +170,7 @@ fun CollapsingToolbarScaffold(
 	modifier: Modifier,
 	state: CollapsingToolbarScaffoldState,
 	scrollStrategy: ScrollStrategy,
+	snapConfig: SnapConfig? = null,
 	enabled: Boolean = true,
 	toolbarModifier: Modifier = Modifier,
 	toolbar: @Composable CollapsingToolbarScope.() -> Unit,
@@ -93,9 +180,8 @@ fun CollapsingToolbarScaffold(
 	val layoutDirection = LocalLayoutDirection.current
 
 	val nestedScrollConnection = remember(scrollStrategy, state) {
-		scrollStrategy.create(state.offsetYState, state.toolbarState, flingBehavior)
+		scrollStrategy.create(state, flingBehavior, snapConfig)
 	}
-
 	val toolbarState = state.toolbarState
 
 	Layout(
@@ -179,7 +265,7 @@ fun CollapsingToolbarScaffold(
 	}
 }
 
-internal object CollapsingToolbarScaffoldScopeInstance: CollapsingToolbarScaffoldScope {
+internal object CollapsingToolbarScaffoldScopeInstance : CollapsingToolbarScaffoldScope {
 	@ExperimentalToolbarApi
 	override fun Modifier.align(alignment: Alignment): Modifier =
 		this.then(ScaffoldChildAlignmentModifier(alignment))
