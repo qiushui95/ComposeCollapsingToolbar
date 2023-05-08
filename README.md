@@ -5,11 +5,11 @@ A simple implementation of [CollapsingToolbarLayout](https://developer.android.c
 You should add `mavenCentral()` repository before installation. Then add the following line to the `dependencies` block in your app level build.gradle:
 
 ```gradle
-implementation "com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.3"
+implementation "com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.4"
 ```
 or build.gradle.kts:
 ```kotlin
-implementation("com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.3")
+implementation("com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.4")
 ```
 
 ## Example
