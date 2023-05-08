@@ -28,6 +28,8 @@ import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
@@ -194,6 +196,7 @@ fun CollapsingToolbarScaffold(
 	enabled: Boolean = true,
 	toolbarModifier: Modifier = Modifier,
 	toolbarClipToBounds: Boolean = true,
+	toolbarScrollable: Boolean = false,
 	toolbar: @Composable CollapsingToolbarScope.() -> Unit,
 	body: @Composable CollapsingToolbarScaffoldScope.() -> Unit
 ) {
@@ -204,13 +207,18 @@ fun CollapsingToolbarScaffold(
 		scrollStrategy.create(state, flingBehavior, snapConfig)
 	}
 	val toolbarState = state.toolbarState
+	val toolbarScrollState = rememberScrollState()
 
 	Layout(
 		content = {
 			CollapsingToolbar(
-				modifier = toolbarModifier,
+				modifier = toolbarModifier.verticalScroll(
+					state = toolbarScrollState,
+					enabled = enabled && toolbarScrollable,
+					flingBehavior = flingBehavior
+				),
 				clipToBounds = toolbarClipToBounds,
-				collapsingToolbarState = toolbarState,
+				collapsingToolbarState = toolbarState
 			) {
 				toolbar()
 			}

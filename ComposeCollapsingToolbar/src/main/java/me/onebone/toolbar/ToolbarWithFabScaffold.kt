@@ -15,6 +15,7 @@ fun ToolbarWithFabScaffold(
 	snapConfig: SnapConfig? = null,
 	toolbarModifier: Modifier = Modifier,
 	toolbarClipToBounds: Boolean = true,
+	toolbarScrollable: Boolean = false,
 	toolbar: @Composable CollapsingToolbarScope.() -> Unit,
 	fab: @Composable () -> Unit,
 	fabPosition: FabPosition = FabPosition.End,
@@ -38,6 +39,7 @@ fun ToolbarWithFabScaffold(
 				snapConfig = snapConfig,
 				toolbarModifier = toolbarModifier,
 				toolbarClipToBounds = toolbarClipToBounds,
+				toolbarScrollable = toolbarScrollable,
 				toolbar = toolbar,
 				body = body
 			)

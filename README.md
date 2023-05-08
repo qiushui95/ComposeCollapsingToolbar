@@ -5,11 +5,11 @@ A simple implementation of [CollapsingToolbarLayout](https://developer.android.c
 You should add `mavenCentral()` repository before installation. Then add the following line to the `dependencies` block in your app level build.gradle:
 
 ```gradle
-implementation "com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.4"
+implementation "com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.5"
 ```
 or build.gradle.kts:
 ```kotlin
-implementation("com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.4")
+implementation("com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.5")
 ```
 
 ## Example
@@ -51,6 +51,8 @@ CollapsingToolbarScaffold(
 ```
 
 By default, `CollapsingToolbar` clips content to its bounds. In order to disable it, set `toolbarClipToBounds = false` in `CollapsingToolbarScaffold`.
+
+By default, `CollapsingToolbar` is not scrollable. In order to enable it, set `toolbarScrollable = true` in `CollapsingToolbarScaffold`.
 
 ### CollapsingToolbarScaffoldState
 `CollapsingToolbarScaffoldState` is a holder of the scaffold state, such as the value of y offset and how much the toolbar has expanded. The field is public so you may use it as you need.
