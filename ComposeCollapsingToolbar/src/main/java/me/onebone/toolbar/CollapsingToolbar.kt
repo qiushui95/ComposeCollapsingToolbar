@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
@@ -198,6 +199,7 @@ fun rememberCollapsingToolbarState(
 @Composable
 fun CollapsingToolbar(
 	modifier: Modifier = Modifier,
+	clipToBounds: Boolean = true,
 	collapsingToolbarState: CollapsingToolbarState,
 	content: @Composable CollapsingToolbarScope.() -> Unit
 ) {
@@ -208,7 +210,13 @@ fun CollapsingToolbar(
 	Layout(
 		content = { CollapsingToolbarScopeInstance.content() },
 		measurePolicy = measurePolicy,
-		modifier = modifier
+		modifier = modifier.then(
+			if (clipToBounds) {
+				Modifier.clipToBounds()
+			} else {
+				Modifier
+			}
+		)
 	)
 }
 
