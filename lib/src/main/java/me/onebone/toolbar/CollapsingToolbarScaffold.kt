@@ -23,6 +23,8 @@
 package me.onebone.toolbar
 
 import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
@@ -86,6 +88,7 @@ fun CollapsingToolbarScaffold(
 	scrollStrategy: ScrollStrategy,
 	enabled: Boolean = true,
 	toolbarModifier: Modifier = Modifier,
+	toolbarScrollable: Boolean = false,
 	toolbar: @Composable CollapsingToolbarScope.() -> Unit,
 	body: @Composable CollapsingToolbarScaffoldScope.() -> Unit
 ) {
@@ -97,11 +100,16 @@ fun CollapsingToolbarScaffold(
 	}
 
 	val toolbarState = state.toolbarState
+	val toolbarScrollState = rememberScrollState()
 
 	Layout(
 		content = {
 			CollapsingToolbar(
-				modifier = toolbarModifier,
+				modifier = toolbarModifier.verticalScroll(
+					state = toolbarScrollState,
+					enabled = enabled && toolbarScrollable,
+					flingBehavior = flingBehavior
+				),
 				collapsingToolbarState = toolbarState
 			) {
 				toolbar()
