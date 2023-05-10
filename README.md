@@ -1,63 +1,89 @@
 # compose-collapsing-toolbar
-A simple implementation of [CollapsingToolbarLayout](https://developer.android.com/reference/com/google/android/material/appbar/CollapsingToolbarLayout) for Jetpack Compose
+
+A simple implementation
+of [CollapsingToolbarLayout](https://developer.android.com/reference/com/google/android/material/appbar/CollapsingToolbarLayout)
+for Jetpack Compose
 
 ## Installation
-You should add `mavenCentral()` repository before installation. Then add the following line to the `dependencies` block in your app level build.gradle:
+
+You should add `mavenCentral()` repository before installation. Then add the following line to
+the `dependencies` block in your app level build.gradle:
 
 ```gradle
-implementation "com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.6"
+implementation "com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.8"
 ```
+
 or build.gradle.kts:
+
 ```kotlin
-implementation("com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.6")
+implementation("com.github.GIGAMOLE:ComposeCollapsingToolbar:1.0.8")
 ```
 
 ## Example
+
 An example can be found [here](app/src/main).
 
 ## Usage
+
 ### Using CollapsingToolbarScaffold
-`CollapsingToolbarScaffold` is a container to help you place composables and move them as a user dispatches scroll. It provides two holes where you can place you components.
-To use `CollapsingToolbarScaffold` you will need `CollapsingToolbarScaffoldState` which could be retrieved using `rememberCollapsingToolbarScaffoldState()`.
+
+`CollapsingToolbarScaffold` is a container to help you place composables and move them as a user
+dispatches scroll. It provides two holes where you can place you components.
+To use `CollapsingToolbarScaffold` you will need `CollapsingToolbarScaffoldState` which could be
+retrieved using `rememberCollapsingToolbarScaffoldState()`.
+
 ```kotlin
 CollapsingToolbarScaffold(
-    state = rememberCollapsingToolbarScaffoldState(), // provide the state of the scaffold
-    toolbar = {
-        // contents of toolbar go here...
-    }
+	state = rememberCollapsingToolbarScaffoldState(), // provide the state of the scaffold
+	toolbar = {
+		// contents of toolbar go here...
+	}
 ) {
-    // main contents go here...
+	// main contents go here...
 }
 ```
 
-The toolbar will collapse until it gets as small as the smallest child, and will expand as large as the largest child.
+The toolbar will collapse until it gets as small as the smallest child, and will expand as large as
+the largest child.
 
-By default, `CollapsingToolbar` clips content to its bounds. In order to disable it, set `toolbarClipToBounds = false` in `CollapsingToolbarScaffold`.
+By default, `CollapsingToolbar` clips content to its bounds. In order to disable it,
+set `toolbarClipToBounds = false` in `CollapsingToolbarScaffold`.
 
-By default, `CollapsingToolbarScaffold` is scrollable when the body content is unfilled (basically the scrollable body content without `Modifier.fillMaxHeight()`/`Modifier.fillMaxSize()`). In order to disable the scroll only when body content is unfilled, set `enabledWhenBodyUnfilled = false` in `CollapsingToolbarScaffold`. Also note that if the `CollapsingToolbar` is collapsed when the body content becomes unfilled, it will be automatically expanded.
+By default, `CollapsingToolbarScaffold` is scrollable when the body content is unfilled (basically
+the scrollable body content without `Modifier.fillMaxHeight()`/`Modifier.fillMaxSize()`). In order
+to disable the scroll only when body content is unfilled, set `enabledWhenBodyUnfilled = false`
+in `CollapsingToolbarScaffold`. Also note that if the `CollapsingToolbar` is collapsed when the body
+content becomes unfilled, it will be automatically expanded.
 
-By default, `CollapsingToolbar` clips content to its bounds. In order to disable it, set `toolbarClipToBounds = false` in `CollapsingToolbarScaffold`.
-
-By default, `CollapsingToolbar` is not scrollable. In order to enable it, set `toolbarScrollable = true` in `CollapsingToolbarScaffold`.
+By default, `CollapsingToolbar` is not scrollable. In order to enable it,
+set `toolbarScrollable = true` in `CollapsingToolbarScaffold`.
 
 ### CollapsingToolbarScaffoldState
-`CollapsingToolbarScaffoldState` is a holder of the scaffold state, such as the value of y offset and how much the toolbar has expanded. The field is public so you may use it as you need.
-Note that the `CollapsingToolbarScaffoldState` is stable, which means that a change on a value of the state triggers a recomposition.
+
+`CollapsingToolbarScaffoldState` is a holder of the scaffold state, such as the value of y offset
+and how much the toolbar has expanded. The field is public so you may use it as you need.
+Note that the `CollapsingToolbarScaffoldState` is stable, which means that a change on a value of
+the state triggers a recomposition.
+
 ```kotlin
 val state = rememberCollapsingToolbarScaffoldState()
 val offsetY = state.offsetY // y offset of the layout
-val progress = state.toolbarState.progress // how much the toolbar is expanded (0: collapsed, 1: expanded)
-val offsetProgress = state.offsetProgress // how much the toolbar offset (EnterAlways, EnterAlwaysCollapsed) is expanded (0: collapsed, 1: expanded)
-val totalProgress = state.totalProgress // how much the toolbar height and offset is expanded (0: collapsed, 1: expanded)
+val progress =
+	state.toolbarState.progress // how much the toolbar is expanded (0: collapsed, 1: expanded)
+val offsetProgress =
+	state.offsetProgress // how much the toolbar offset (EnterAlways, EnterAlwaysCollapsed) is expanded (0: collapsed, 1: expanded)
+val totalProgress =
+	state.totalProgress // how much the toolbar height and offset is expanded (0: collapsed, 1: expanded)
 
 Text(
-    text = "Hello World",
-    textSize = (18 + (30 - 18) * progress).sp // text size depending on the progress
-    // recomposed when the value of the progress is changed
+	text = "Hello World",
+	textSize = (18 + (30 - 18) * progress).sp // text size depending on the progress
+	// recomposed when the value of the progress is changed
 )
 ```
 
 Also, it is possible to trigger collapse/expansion animations manually:
+
 ```kotlin
 val state = rememberCollapsingToolbarScaffoldState()
 state.toolbarState.expand() // expand toolbar
@@ -69,80 +95,99 @@ state.collapse() // collapse altogether toolbar and offset
 ```
 
 ## parallax, pin, road
-You can tell children of `CollapsingToolbar` how to deal with a collapse/expansion. This works almost the same way to the `collapseMode` in the `CollapsingToolbarLayout` except for the `road` modifier.
+
+You can tell children of `CollapsingToolbar` how to deal with a collapse/expansion. This works
+almost the same way to the `collapseMode` in the `CollapsingToolbarLayout` except for the `road`
+modifier.
 
 ```kotlin
 CollapsingToolbar(/* ... */) {
-    Image(
-        modifier = Modifier.parallax(ratio = 0.2f) // parallax, pin, road are available
-    )
+	Image(
+		modifier = Modifier.parallax(ratio = 0.2f) // parallax, pin, road are available
+	)
 }
 ```
 
-To properly set the `minHeight`/`maxHeight` for `CollapsingToolbar` use `Modifier.pin()` on the child, because `CollapsingToolbar` determines its `minHeight`/`maxHeight` by the smallest/largest child.
+To properly set the `minHeight`/`maxHeight` for `CollapsingToolbar` use `Modifier.pin()` on the
+child, because `CollapsingToolbar` determines its `minHeight`/`maxHeight` by the smallest/largest
+child.
 
 ### road modifier
-The `road()` modifier allows you to place a child relatively to the toolbar. It receives two arguments: `whenCollapsed` and `whenExpanded`. As the name suggests, these describe how to place a child when the toolbar is collapsed or expanded, respectively.
+
+The `road()` modifier allows you to place a child relatively to the toolbar. It receives two
+arguments: `whenCollapsed` and `whenExpanded`. As the name suggests, these describe how to place a
+child when the toolbar is collapsed or expanded, respectively.
 This can be used to display a title text on the toolbar which is moving as the scroll is fed.
+
 ```kotlin
 CollapsingToolbarScaffold(
-    toolbar = {
-	    Text(
-            text = "Title",
-            modifier = Modifier
-                .road(
-                    whenCollapsed = Alignment.CenterStart,
-                    whenExpanded = Alignment.BottomEnd
-                )
-        )
-    }
+	toolbar = {
+		Text(
+			text = "Title",
+			modifier = Modifier
+				.road(
+					whenCollapsed = Alignment.CenterStart,
+					whenExpanded = Alignment.BottomEnd
+				)
+		)
+	}
 ) {
-    // ...
+	// ...
 }
 ```
-The above code orders the title `Text` to be placed at the _CenterStart_ position when the toolbar is collapsed and _BottomEnd_ position when it is expanded. 
 
+The above code orders the title `Text` to be placed at the _CenterStart_ position when the toolbar
+is collapsed and _BottomEnd_ position when it is expanded.
 
 ## Scroll Strategy
-`ScrollStrategy` defines how `CollapsingToolbar` consumes scroll. You can set your desired behavior by providing `scrollStrategy` to `CollapsingToolbarScaffold`:
+
+`ScrollStrategy` defines how `CollapsingToolbar` consumes scroll. You can set your desired behavior
+by providing `scrollStrategy` to `CollapsingToolbarScaffold`:
 
 ```kotlin
 CollapsingToolbarScaffold(
-    /* ... */
-    scrollStrategy = ScrollStrategy.EnterAlways // EnterAlways, EnterAlwaysCollapsed, ExitUntilCollapsed are available
+	/* ... */
+	scrollStrategy = ScrollStrategy.EnterAlways // EnterAlways, EnterAlwaysCollapsed, ExitUntilCollapsed are available
 ) {
-    /* ... */
+	/* ... */
 }
 ```
 
-
 ### ScrollStrategy.EnterAlways
+
 ![EnterAlways](img/enter-always.gif)
 
 ### ScrollStrategy.EnterAlwaysCollapsed
+
 ![EnterAlwaysCollapsed](img/enter-always-collapsed.gif)
 
 ### ScrollStrategy.ExitUntilCollapsed
+
 ![ExitUntilCollapsed](img/exit-until-collapsed.gif)
 
 ## Snap Config
-`SnapConfig` defines how `CollapsingToolbar` snaps to its edges. You can enable snapping by providing `snapConfig` to `CollapsingToolbarScaffold`:
+
+`SnapConfig` defines how `CollapsingToolbar` snaps to its edges. You can enable snapping by
+providing `snapConfig` to `CollapsingToolbarScaffold`:
 
 ```kotlin
 CollapsingToolbarScaffold(
-    /* ... */
-    snapConfig = SnapConfig() // "collapseThreshold = 0.5" by default
+	/* ... */
+	snapConfig = SnapConfig() // "collapseThreshold = 0.5" by default
 ) {
-    /* ... */
+	/* ... */
 }
 ```
 
 ### Snap for ScrollStrategy.EnterAlways
+
 ![Snap for EnterAlways](img/snap-enter-always.gif)
 
 ### Snap for ScrollStrategy.EnterAlwaysCollapsed
+
 ![Snap for EnterAlwaysCollapsed](img/snap-enter-always-collapsed.gif)
 
 ### Snap ScrollStrategy.ExitUntilCollapsed
+
 ![Snap for ExitUntilCollapsed](img/snap-exit-until-collapsed.gif)
 

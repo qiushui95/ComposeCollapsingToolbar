@@ -54,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.onebone.toolbar.ui.theme.CollapsingToolbarTheme
+import kotlin.random.Random
 
 class ParallaxActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +74,7 @@ fun ParallaxEffect() {
 	val state = rememberCollapsingToolbarScaffoldState()
 
 	var enabled by remember { mutableStateOf(true) }
+	var listSize by remember { mutableStateOf(14) }
 
 	Box {
 		CollapsingToolbarScaffold(
@@ -81,9 +83,10 @@ fun ParallaxEffect() {
 			scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
 			snapConfig = SnapConfig(),
 			toolbarModifier = Modifier.background(MaterialTheme.colors.primary),
-			toolbarClipToBounds = false,
+			toolbarClipToBounds = true,
 			toolbarScrollable = true,
 			enabled = enabled,
+			enabledWhenBodyUnfilled = false,
 			toolbar = {
 				// Collapsing toolbar collapses its size as small as the that of
 				// a smallest child. To make the toolbar collapse to 50dp, we create
@@ -111,7 +114,7 @@ fun ParallaxEffect() {
 		) {
 			LazyColumn {
 				items(
-					List(100) { "Hello World!! $it" }
+					List(listSize) { "Hello World!! $it" }
 				) {
 					Text(
 						text = it,
@@ -127,7 +130,7 @@ fun ParallaxEffect() {
 				modifier = Modifier
 					.padding(16.dp)
 					.align(Alignment.BottomEnd),
-				onClick = { }
+				onClick = { listSize = 10 + Random.nextInt(11) }
 			) {
 				Text(text = "Floating Button!")
 			}

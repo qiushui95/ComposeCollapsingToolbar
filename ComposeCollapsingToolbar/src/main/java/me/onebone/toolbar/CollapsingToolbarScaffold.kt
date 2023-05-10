@@ -22,22 +22,18 @@
 
 package me.onebone.toolbar
 
+import android.annotation.SuppressLint
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
-import android.annotation.SuppressLint
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -229,7 +225,7 @@ fun CollapsingToolbarScaffold(
 
 	var isBodyUnfilled by remember { mutableStateOf(true) }
 
-	handleToolbarExpandWhenBodyUnfilled(enabledWhenBodyUnfilled, isBodyUnfilled, toolbarState)
+	handleToolbarExpandWhenBodyUnfilled(enabledWhenBodyUnfilled, isBodyUnfilled, state)
 
 	Layout(
 		content = {
@@ -355,12 +351,12 @@ private fun Modifier.collapsingToolbarScaffoldNestedScroll(
 private fun handleToolbarExpandWhenBodyUnfilled(
 	enabledWhenBodyUnfilled: Boolean,
 	isBodyUnfilled: Boolean,
-	toolbarState: CollapsingToolbarState
+	state: CollapsingToolbarScaffoldState
 ) {
 	if (enabledWhenBodyUnfilled.not()) {
 		LaunchedEffect(isBodyUnfilled) {
-			if (isBodyUnfilled && toolbarState.progress != 1f) {
-				toolbarState.expand()
+			if (isBodyUnfilled && state.totalProgress != 1f) {
+				state.expand()
 			}
 		}
 	}
@@ -382,19 +378,19 @@ private fun BodyScrollableBox(
 
 @Composable
 private fun ToolbarScrollableBox(
-		enabled: Boolean,
-		toolbarScrollable: Boolean,
-		toolbarState: CollapsingToolbarState,
-		toolbarScrollState: ScrollState
+	enabled: Boolean,
+	toolbarScrollable: Boolean,
+	toolbarState: CollapsingToolbarState,
+	toolbarScrollState: ScrollState
 ) {
 	val toolbarScrollableEnabled = enabled && toolbarScrollable
 
 	if (toolbarScrollableEnabled && toolbarState.height != Constraints.Infinity) {
 		Box(
-				modifier = Modifier
-						.fillMaxWidth()
-						.height(with(LocalDensity.current) { toolbarState.height.toDp() })
-						.verticalScroll(state = toolbarScrollState)
+			modifier = Modifier
+				.fillMaxWidth()
+				.height(with(LocalDensity.current) { toolbarState.height.toDp() })
+				.verticalScroll(state = toolbarScrollState)
 		)
 	}
 }
