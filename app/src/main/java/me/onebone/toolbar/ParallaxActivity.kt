@@ -109,10 +109,7 @@ fun ParallaxEffect() {
 				)
 			}
 		) {
-			LazyColumn(
-				modifier = Modifier
-					.fillMaxSize()
-			) {
+			LazyColumn {
 				items(
 					List(100) { "Hello World!! $it" }
 				) {
