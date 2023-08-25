@@ -88,11 +88,11 @@ class CollapsingToolbarState(
 	var maxHeight: Int
 		get() = maxHeightState
 		internal set(value) {
-			maxHeightState = value
+            val offsetHeight = value - maxHeightState
 
-			if (value < height) {
-				height = value
-			}
+            maxHeightState = value
+
+            height += offsetHeight
 		}
 
 	private var maxHeightState by mutableStateOf(Int.MAX_VALUE)
