@@ -264,7 +264,8 @@ fun CollapsingToolbarScaffold(
 
 		val toolbarConstraints = constraints.copy(
 			minWidth = 0,
-			minHeight = 0
+			minHeight = 0,
+            maxHeight = Int.MAX_VALUE,
 		)
 		val bodyConstraints = constraints.copy(
 			minWidth = 0,
