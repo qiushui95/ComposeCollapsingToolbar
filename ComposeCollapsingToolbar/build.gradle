@@ -4,13 +4,13 @@ plugins {
     id 'maven-publish'
 }
 
-group = "com.github.GIGAMOLE"
+group = "com.github.GIGAMOLE.fix"
 version = "1.0.8"
 
 publishing {
     publications {
         release(MavenPublication) {
-            groupId = "com.github.GIGAMOLE"
+            groupId = "com.github.GIGAMOLE.fix"
             artifactId = "ComposeCollapsingToolbar"
             version = "1.0.8"
 
