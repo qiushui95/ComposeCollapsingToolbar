@@ -19,6 +19,17 @@ publishing {
             }
         }
     }
+
+    repositories {
+        maven {
+            name = "Hero"
+            url = System.getenv("HERO_NEXUS_URL")
+            credentials {
+                username System.getenv('HERO_NEXUS_USERNAME')
+                password System.getenv('HERO_NEXUS_PASSWORD')
+            }
+        }
+    }
 }
 
 android {
